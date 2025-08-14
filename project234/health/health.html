@@ -1,0 +1,140 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar, Heart, FileText, Users, Clock, Shield } from "lucide-react";
+
+const Index = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="relative py-20 px-6">
+        <div className="max-w-6xl mx-auto text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            Your Health, Our Priority
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Comprehensive healthcare management platform for patients. Book appointments, track your health, and access your medical records securely.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="text-lg px-8">
+              Book Appointment
+            </Button>
+            <Button variant="outline" size="lg" className="text-lg px-8">
+              Patient Portal
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-6 bg-muted/50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Comprehensive Patient Care</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <Calendar className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>Easy Appointment Booking</CardTitle>
+                <CardDescription>
+                  Schedule appointments with your preferred doctors at convenient times
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <Heart className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>Health Tracking</CardTitle>
+                <CardDescription>
+                  Monitor your vital signs, medications, and health progress over time
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <FileText className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>Medical Records</CardTitle>
+                <CardDescription>
+                  Secure access to your complete medical history and test results
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <Users className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>Doctor Network</CardTitle>
+                <CardDescription>
+                  Connect with certified healthcare professionals in your area
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <Clock className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>24/7 Support</CardTitle>
+                <CardDescription>
+                  Round-the-clock healthcare assistance and emergency support
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <Shield className="h-12 w-12 text-primary mb-4" />
+                <CardTitle>Privacy & Security</CardTitle>
+                <CardDescription>
+                  HIPAA-compliant platform ensuring your health data stays protected
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Actions Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Quick Actions</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card className="text-center p-6 hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary">
+              <CardContent className="pt-6">
+                <Calendar className="h-16 w-16 text-primary mx-auto mb-4" />
+                <CardTitle className="mb-2">Book Now</CardTitle>
+                <CardDescription>Schedule your next appointment</CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center p-6 hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary">
+              <CardContent className="pt-6">
+                <Heart className="h-16 w-16 text-primary mx-auto mb-4" />
+                <CardTitle className="mb-2">Health Dashboard</CardTitle>
+                <CardDescription>View your health metrics</CardDescription>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center p-6 hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-primary">
+              <CardContent className="pt-6">
+                <FileText className="h-16 w-16 text-primary mx-auto mb-4" />
+                <CardTitle className="mb-2">Medical Records</CardTitle>
+                <CardDescription>Access your health history</CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-muted py-12 px-6">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-muted-foreground">
+            © 2024 HealthCare Portal. Your trusted partner in health management.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Index;

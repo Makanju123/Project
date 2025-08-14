@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SkillGrid — Find & Offer Local Skills</title>
+  <meta name="description" content="A simple community website for sharing and finding local skills and quick jobs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #111834;
+      --muted: #aab3cf;
+      --text: #eaf0ff;
+      --accent: #5eead4; /* teal */
+      --accent-2: #94a3b8; /* slate */
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:inherit}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;backdrop-filter:saturate(140%) blur(10px);background:rgba(11,16,32,.7);border-bottom:1px solid rgba(148,163,184,.15);z-index:50}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+    .logo{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#4f46e5,#06b6d4)}
+    .btn{appearance:none;border:none;background:#1e293b;color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600;transition:.2s;box-shadow:var(--shadow)}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{background:linear-gradient(135deg,#06b6d4,#16a34a);color:#071218}
+    .btn.ghost{background:transparent;border:1px solid rgba(148,163,184,.25);box-shadow:none}
+    .btn.danger{background:#7f1d1d}
+
+    .hero{padding:56px 24px 10px}
+    .hero .wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:center}
+    .hero h1{font-size:clamp(28px,5vw,44px);margin:0 0 10px}
+    .hero p{color:var(--muted);margin:0 0 18px}
+    .hero .card{background:linear-gradient(180deg,rgba(148,163,184,.12),transparent);border:1px solid rgba(148,163,184,.18);border-radius:var(--radius);padding:18px}
+
+    .bar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+    .field{position:relative;flex:1 1 210px}
+    .field input,.field select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(148,163,184,.25);background:#0f172a;color:var(--text)}
+    .field label{position:absolute;left:12px;top:-9px;background:var(--bg);padding:2px 6px;border-radius:8px;font-size:12px;color:var(--muted);border:1px solid rgba(148,163,184,.25)}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0 40px}
+    @media (max-width:900px){.hero .wrap{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:600px){.grid{grid-template-columns:1fr}}
+
+    .card{background:linear-gradient(180deg,rgba(148,163,184,.10),rgba(148,163,184,.03));border:1px solid rgba(148,163,184,.18);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .tag{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(148,163,184,.15);color:#e2e8f0;font-size:12px;margin-right:6px}
+    .skill-title{font-weight:700;margin:10px 0 8px;font-size:18px}
+    .muted{color:var(--muted);font-size:14px}
+    .card .footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+
+    .section-title{display:flex;align-items:center;gap:10px;margin:30px 0 10px}
+    .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.25);color:var(--muted);font-size:12px}
+
+    .form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .form .full{grid-column:1/-1}
+    textarea{min-height:90px;resize:vertical}
+
+    .empty{padding:20px;border:1px dashed rgba(148,163,184,.25);border-radius:16px;color:var(--muted);text-align:center}
+
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:24px;z-index:100}
+    .modal.open{display:flex}
+    .modal .panel{background:#0b1228;border:1px solid rgba(148,163,184,.25);border-radius:18px;max-width:520px;width:100%;padding:18px}
+
+    footer{padding:40px 24px;color:var(--muted);border-top:1px solid rgba(148,163,184,.15);margin-top:40px}
+    .credits{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav container">
+      <div class="brand" aria-label="SkillGrid Home">
+        <div class="logo" aria-hidden="true">
+          <!-- simple link icon -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.59 13.41a1.996 1.996 0 0 0 2.82 0l3.59-3.59a2 2 0 1 0-2.83-2.83l-1 1" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M13.41 10.59a1.996 1.996 0 0 0-2.82 0l-3.59 3.59a2 2 0 1 0 2.83 2.83l1-1" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span>SkillGrid</span>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button id="backupBtn" class="btn ghost" title="Download a backup of listed skills">Backup JSON</button>
+        <button id="addOpenBtn" class="btn primary">Offer Your Skill</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="wrap">
+        <div>
+          <h1>Connect with trusted <span style="color:var(--accent)">local skills</span> — fast.</h1>
+          <p>Find tailors, tutors, mechanics, designers, cleaners, photographers, barbers, developers and more in your area. Or post your skill and get hired today.</p>
+          <div class="bar">
+            <div class="field">
+              <label for="q">Search</label>
+              <input id="q" type="search" placeholder="e.g. hair stylist, maths tutor, plumber" />
+            </div>
+            <div class="field">
+              <label for="category">Category</label>
+              <select id="category">
+                <option value="">All categories</option>
+                <option>Home Services</option>
+                <option>Education</option>
+                <option>Beauty & Wellness</option>
+                <option>Tech & Design</option>
+                <option>Events</option>
+                <option>Repairs</option>
+                <option>Food</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="location">Location</label>
+              <input id="location" placeholder="City/Area" />
+            </div>
+            <div class="field" style="max-width:190px">
+              <label for="sort">Sort</label>
+              <select id="sort">
+                <option value="recent">Most recent</option>
+                <option value="rateLow">Rate: Low → High</option>
+                <option value="rateHigh">Rate: High → Low</option>
+              </select>
+            </div>
+            <button id="searchBtn" class="btn" style="align-self:flex-end">Search</button>
+          </div>
+          <div class="pill" id="count">0 results</div>
+        </div>
+        <div class="card">
+          <strong>How it works</strong>
+          <ol class="muted" style="margin:10px 0 0; padding-left:18px">
+            <li>Use the search to find a skill near you.</li>
+            <li>Open a profile to see details and contacts.</li>
+            <li>Click WhatsApp or call to reach them directly.</li>
+            <li>Rate your experience so others know who to trust.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2 style="margin:0">Featured & Recent</h2>
+        <span class="pill">Community Listings</span>
+      </div>
+      <div id="list" class="grid" role="list"></div>
+      <div id="empty" class="empty" hidden>No listings yet. Be the first to <button class="btn" id="ctaAddInline">offer your skill</button> ✨</div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h3 style="margin:0">Offer Your Skill</h3>
+        <span class="pill">Free to post</span>
+      </div>
+      <form id="skillForm" class="form card" autocomplete="on">
+        <div class="field">
+          <label for="name">Your Name</label>
+          <input id="name" required placeholder="e.g. Aisha Bello" />
+        </div>
+        <div class="field">
+          <label for="title">Skill Title</label>
+          <input id="title" required placeholder="e.g. Mobile barber / Home tutoring" />
+        </div>
+        <div class="field">
+          <label for="cat">Category</label>
+          <select id="cat" required>
+            <option value="">Select</option>
+            <option>Home Services</option>
+            <option>Education</option>
+            <option>Beauty & Wellness</option>
+            <option>Tech & Design</option>
+            <option>Events</option>
+            <option>Repairs</option>
+            <option>Food</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rate">Your Rate (₦)</label>
+          <input id="rate" type="number" min="0" step="1" placeholder="e.g. 5000" />
+        </div>
+        <div class="field">
+          <label for="area">Location</label>
+          <input id="area" required placeholder="e.g. Ikeja, Lagos" />
+        </div>
+        <div class="field">
+          <label for="phone">Phone / WhatsApp</label>
+          <input id="phone" type="tel" required placeholder="e.g. 0803 000 0000" />
+        </div>
+        <div class="field full">
+          <label for="desc">Description</label>
+          <textarea id="desc" placeholder="Short description of what you offer, experience, availability…"></textarea>
+        </div>
+        <div class="field">
+          <label for="image">Photo URL (optional)</label>
+          <input id="image" type="url" placeholder="Link to your work or profile picture" />
+        </div>
+        <div class="field">
+          <label for="featured">Mark as Featured?</label>
+          <select id="featured">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+        <div class="field full" style="display:flex;gap:10px">
+          <button class="btn primary" type="submit">Post Listing</button>
+          <button class="btn ghost" id="resetBtn" type="button">Reset Form</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div class="modal" id="detailModal" aria-hidden="true" role="dialog" aria-label="Listing details">
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <h3 id="detailTitle" style="margin:0"></h3>
+        <button class="btn ghost" id="closeModal">Close</button>
+      </div>
+      <div id="detailBody" class="muted" style="margin-top:10px"></div>
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <a id="waBtn" class="btn" target="_blank" rel="noopener">WhatsApp</a>
+        <a id="callBtn" class="btn" href="#">Call</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container credits">
+      <div>© <span id="year"></span> SkillGrid • Built for the community</div>
+      <div>
+        <button id="seedBtn" class="btn ghost" title="Load example listings">Load Demo Data</button>
+        <button id="clearBtn" class="btn danger" title="Clear all saved listings">Clear All</button>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /**
+     * Simple Local Skills Web App
+     * - Stores listings in localStorage (key: SkillGrid:listings)
+     * - Filter by query, category, location; sort by recent or rate
+     * - Add new listings via form
+     * - View details & contact via modal
+     */
+
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+    const storeKey = 'SkillGrid:listings';
+
+    const state = {
+      q: '',
+      category: '',
+      location: '',
+      sort: 'recent',
+      items: []
+    }
+
+    // Load
+    function load() {
+      try {
+        const raw = localStorage.getItem(storeKey);
+        state.items = raw ? JSON.parse(raw) : [];
+      } catch(e) { state.items = []; }
+      render();
+    }
+
+    function save() {
+      localStorage.setItem(storeKey, JSON.stringify(state.items));
+    }
+
+    // Utilities
+    function id() { return Math.random().toString(36).slice(2,9); }
+    function fmtNaira(n){ if(!n && n!==0) return '—'; return new Intl.NumberFormat('en-NG',{style:'currency',currency:'NGN',maximumFractionDigits:0}).format(+n); }
+    function when(ts){ const d = new Date(ts); return d.toLocaleDateString([], { year:'numeric', month:'short', day:'numeric' }); }
+
+    // Render list
+    function render(){
+      const list = $('#list');
+      const empty = $('#empty');
+      const count = $('#count');
+
+      const filtered = state.items
+        .filter(x => state.category ? x.category === state.category : true)
+        .filter(x => state.location ? x.location.toLowerCase().includes(state.location.toLowerCase()) : true)
+        .filter(x => state.q ? (x.title + ' ' + x.description + ' ' + x.name).toLowerCase().includes(state.q.toLowerCase()) : true);
+
+      const sorted = filtered.sort((a,b)=>{
+        if(state.sort==='rateLow') return (+a.rate||0) - (+b.rate||0);
+        if(state.sort==='rateHigh') return (+b.rate||0) - (+a.rate||0);
+        // featured first, then recent
+        if((b.featured?1:0)!==(a.featured?1:0)) return (b.featured?1:0)-(a.featured?1:0);
+        return b.created - a.created;
+      });
+
+      count.textContent = `${sorted.length} result${sorted.length===1?'':'s'}`;
+
+      list.innerHTML = '';
+      if(sorted.length===0){ empty.hidden=false; return; }
+      empty.hidden=true;
+
+      for(const item of sorted){
+        const card = document.createElement('article');
+        card.className='card';
+        card.setAttribute('role','listitem');
+        card.innerHTML = `
+          <div style="display:flex; gap:12px; align-items:flex-start">
+            <div style="width:64px; height:64px; border-radius:14px; background:#0f172a; flex:0 0 64px; overflow:hidden; display:grid; place-items:center; border:1px solid rgba(148,163,184,.2)">
+              ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover"/>` : `<span class="muted" aria-hidden="true">📌</span>`}
+            </div>
+            <div style="flex:1">
+              <div>
+                ${item.featured ? '<span class="tag">Featured</span>' : ''}
+                <span class="tag">${item.category}</span>
+              </div>
+              <div class="skill-title">${item.title}</div>
+              <div class="muted">by <strong style="color:#e2e8f0">${item.name}</strong> • ${item.location} • Rate: <strong>${fmtNaira(item.rate)}</strong></div>
+              <p class="muted" style="margin:8px 0 0">${(item.description||'').slice(0,140)}${(item.description||'').length>140?'…':''}</p>
+              <div class="footer">
+                <button class="btn" data-view="${item.id}">View Details</button>
+                <span class="muted" title="Posted on ${when(item.created)}">${when(item.created)}</span>
+              </div>
+            </div>
+          </div>`;
+        list.appendChild(card);
+      }
+
+      // attach view handlers
+      $$('[data-view]').forEach(btn=>btn.addEventListener('click',()=>openDetail(btn.getAttribute('data-view'))));
+    }
+
+    // Detail modal
+    function openDetail(id){
+      const item = state.items.find(x=>x.id===id);
+      if(!item) return;
+      $('#detailTitle').textContent = item.title;
+      $('#detailBody').innerHTML = `
+        <div style="display:flex; gap:12px; align-items:flex-start">
+          <div style="width:80px; height:80px; border-radius:14px; background:#0f172a; flex:0 0 80px; overflow:hidden; display:grid; place-items:center; border:1px solid rgba(148,163,184,.2)">
+            ${item.image ? `<img src="${item.image}" alt="${item.title}" style="width:100%;height:100%;object-fit:cover"/>` : `<span class="muted" aria-hidden="true">📌</span>`}
+          </div>
+          <div>
+            <div class="muted">Category: ${item.category} • Location: ${item.location}</div>
+            <div style="margin-top:6px">${item.description ? item.description.replace(/\n/g,'<br/>') : ''}</div>
+            <div class="muted" style="margin-top:8px">Rate: <strong>${fmtNaira(item.rate)}</strong> • Posted: ${when(item.created)}</div>
+          </div>
+        </div>`;
+      // links
+      const phone = (item.phone||'').replace(/\s+/g,'');
+      const wa = `https://wa.me/${phone.replace(/^0/,'234')}`; // quick Nigeria default; adjust for your locale
+      $('#waBtn').href = wa;
+      $('#waBtn').textContent = 'WhatsApp ' + (phone? '('+phone+')':'');
+      $('#callBtn').href = `tel:${phone}`;
+      $('#detailModal').classList.add('open');
+      $('#detailModal').setAttribute('aria-hidden','false');
+    }
+
+    $('#closeModal').addEventListener('click',()=>{
+      $('#detailModal').classList.remove('open');
+      $('#detailModal').setAttribute('aria-hidden','true');
+    });
+    window.addEventListener('keydown',e=>{ if(e.key==='Escape') $('#closeModal').click(); })
+
+    // Search controls
+    $('#searchBtn').addEventListener('click',()=>{
+      state.q = $('#q').value.trim();
+      state.category = $('#category').value;
+      state.location = $('#location').value.trim();
+      state.sort = $('#sort').value;
+      render();
+    });
+    ['#q','#category','#location','#sort'].forEach(sel=>$(sel).addEventListener('change',()=>$('#searchBtn').click()));
+
+    // Form submit
+    $('#skillForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const item = {
+        id: id(),
+        name: $('#name').value.trim(),
+        title: $('#title').value.trim(),
+        category: $('#cat').value,
+        rate: $('#rate').value.trim(),
+        location: $('#area').value.trim(),
+        phone: $('#phone').value.trim(),
+        description: $('#desc').value.trim(),
+        image: $('#image').value.trim(),
+        featured: $('#featured').value==='yes',
+        created: Date.now(),
+      }
+      if(!item.name || !item.title || !item.category || !item.location || !item.phone){
+        alert('Please fill in Name, Title, Category, Location and Phone');
+        return;
+      }
+      state.items.push(item);
+      save();
+      e.target.reset();
+      $('#cat').value='';
+      $('#featured').value='no';
+      render();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    $('#resetBtn').addEventListener('click',()=>{
+      $('#skillForm').reset();
+      $('#cat').value='';
+      $('#featured').value='no';
+    });
+
+    // CTA buttons
+    $('#addOpenBtn').addEventListener('click',()=>document.getElementById('skillForm').scrollIntoView({behavior:'smooth'}));
+    $('#ctaAddInline').addEventListener('click',()=>$('#addOpenBtn').click());
+
+    // Backup / Clear / Seed
+    $('#backupBtn').addEventListener('click',()=>{
+      const blob = new Blob([JSON.stringify(state.items,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `skilllink-backup-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    $('#clearBtn').addEventListener('click',()=>{
+      if(confirm('Clear ALL saved listings from this browser?')){
+        state.items = []; save(); render();
+      }
+    });
+
+    $('#seedBtn').addEventListener('click',()=>{
+      const sample = [
+        {id:id(), name:'Olamilekan Spicy', title:'Home Maths Tutor (JSS/SSS)', category:'Education', rate:4000, location:'Mushin, Lagos', phone:'08030035349', description:'Experienced science tutor available weekday evenings and Saturdays. I help students build confidence with past questions and simple explanations.', image:'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=400&auto=format&fit=crop', featured:true, created:Date.now()-86400000*1},
+        {id:id(), name:'Tunde Samuel', title:'Plumber • Fix leaks & Installations', category:'Home Services', rate:8000, location:'Gwarinpa, Abuja', phone:'08020000000', description:'Quick response for pipe leaks, water heater repairs, sink/clog fixes. 5+ yrs experience.', image:'https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=400&auto=format&fit=crop', featured:false, created:Date.now()-86400000*2},
+        {id:id(), name:'Chiamaka U.', title:'Makeup Artist (Home Service)', category:'Beauty & Wellness', rate:15000, location:'Enugu', phone:'08010000000', description:'Bridal, party and photoshoot makeup. Available on short notice. Portfolio on request.', image:'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=400&auto=format&fit=crop', featured:true, created:Date.now()-86400000*3},
+        {id:id(), name:'Segun A.', title:'Phone Repair (Android/iPhone)', category:'Repairs', rate:6000, location:'Ibadan', phone:'08050000000', description:'Screen, battery, charging port, water damage diagnosis. Free check-up.', image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=400&auto=format&fit=crop', featured:false, created:Date.now()-86400000*4},
+        {id:id(), name:'Maryam Danjuma', title:'Graphic Designer & Social Media', category:'Tech & Design', rate:10000, location:'Kaduna', phone:'08040000000', description:'Flyers, logos, IG post designs, simple websites. Fast delivery.', image:'https://images.unsplash.com/photo-1507209696998-3c532be9b2b7?q=80&w=400&auto=format&fit=crop', featured:false, created:Date.now()-86400000*5},
+        {id:id(), name:'Chef Kelechi', title:'Small Chops & Event Catering', category:'Food', rate:20000, location:'Port Harcourt', phone:'08060000000', description:'Delicious small chops, soups and grills for birthdays and corporate events.', image:'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=400&auto=format&fit=crop', featured:false, created:Date.now()-86400000*6}
+      ];
+      state.items = sample; save(); render();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    // Year
+    $('#year').textContent = new Date().getFullYear();
+
+    // Initial load
+    load();
+  </script>
+</body>
+</html>
